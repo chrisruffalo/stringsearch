@@ -27,7 +27,7 @@ public abstract class AbstractNode<D> implements InternalNode<D> {
 	@Override
 	public Set<D> find(String key, boolean exact) {
 		SearchingVisitor<D> visitor = new SearchingVisitor<>();
-		this.visit(visitor, key.toCharArray(), 0, exact);
+		this.visit(visitor, 0, key.toCharArray(), 0, exact);
 		Set<D> results = visitor.found();
 		return results;
 	}
@@ -56,7 +56,7 @@ public abstract class AbstractNode<D> implements InternalNode<D> {
 		}
 		
 		AddingVisitor<D> addingVisitor = new AddingVisitor<>(values);
-		this.visit(addingVisitor, key.toCharArray(), 0, true);
+		this.visit(addingVisitor, 0, key.toCharArray(), 0, true);
 	}
 	
 	@Override
@@ -174,5 +174,5 @@ public abstract class AbstractNode<D> implements InternalNode<D> {
 	public void print() {
         print("", "", true);
     }
-
+	
 }

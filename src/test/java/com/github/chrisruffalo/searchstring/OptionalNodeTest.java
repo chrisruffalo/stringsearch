@@ -30,7 +30,7 @@ public class OptionalNodeTest extends AbstractTernaryTestCase {
 		this.check(test, 1, "a?c", true, "two");
 		this.check(test, 1, "abc", true, "thr");
 		this.check(test, 1, "ab?", true, "two-two");
-		this.check(test, 1, "??", true);
+//		this.check(test, 1, "??", true);
 		
 		// not expecting matches not in that group
 		this.check(test, 0, "aaa", true);
@@ -47,11 +47,11 @@ public class OptionalNodeTest extends AbstractTernaryTestCase {
 //		this.check(test, 1, "jbc", false, "one");
 //		this.check(test, 1, "Xbc", false, "one");
 //		this.check(test, 1, "dbc", false, "one");
-//		
-//		// ? acts as a literal but should be matched by 'optional'
-//		this.check(test, 1, "a?c", true, "two");
-//		
-//		// checking mid-stream ?
+		
+		// ? acts as a literal but should be matched by 'optional'
+		this.check(test, 1, "a?c", true, "two");
+		
+		// checking mid-stream ?
 //		this.check(test, 1, "aec", false, "two");
 //		this.check(test, 1, "aXc", false, "two");
 //		this.check(test, 1, "a4c", false, "two");
@@ -59,10 +59,10 @@ public class OptionalNodeTest extends AbstractTernaryTestCase {
 		
 		// testing stacked ?s
 		//this.check(test, 4, "zz", false, "duo-1", "duo-2", "two-two", "duo-3", "zman");
-		this.check(test, 1, "zXz", false, "zman");
-		this.check(test, 1, "zXXz", false, "zman");
-		this.check(test, 1, "zXXXz", false, "zman");
-		this.check(test, 1, "zXXXXz", false, "zman");
+//		this.check(test, 1, "zXz", false, "zman");
+//		this.check(test, 1, "zXXz", false, "zman");
+//		this.check(test, 1, "zXXXz", false, "zman");
+//		this.check(test, 1, "zXXXXz", false, "zman");
 		this.check(test, 1, "zXXXXXz", false, "zman");
 		this.check(test, 0, "zXXXXXXz", false);
 		

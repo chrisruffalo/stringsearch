@@ -11,7 +11,7 @@ public interface InternalNode<D> extends SearchNode<D> {
 	
 	void add(int index, int visits, Collection<D> values);
 	
-	void visit(Visitor<D> visitor, char[] key, int index, boolean exact);
+	void visit(Visitor<D> visitor, int depth, char[] key, int index, boolean exact);
 	
 	/**
 	 * Checks to see if a search should extend to the node even in the
@@ -23,13 +23,6 @@ public interface InternalNode<D> extends SearchNode<D> {
 	 * @return true if the search should extend, false otherwise
 	 */
 	boolean attracts(boolean exact);
-	
-	/**
-	 * Is the node optional?
-	 * 
-	 * @return
-	 */
-	boolean optional();
 	
 	/**
 	 * Internal mechanism for printing the layout of the nodes

@@ -26,8 +26,8 @@ public class AddingVisitor<D> implements Visitor<D> {
 	}
 	
 	@Override
-	public void at(InternalNode<D> node, int index, int localVisits, char[] key, boolean exact) {
-		node.add(index, localVisits, this.values);
+	public void at(InternalNode<D> node, int depth, int localVisits, char[] key, int index, boolean exact) {
+		node.add(depth, localVisits, this.values);
 	}
 	
 	@Override

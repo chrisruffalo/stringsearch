@@ -18,15 +18,20 @@ class DirectionalNode<D> extends AbstractNode<D> {
 		this.matcher = matcher;
 	}
 	
-	public void visit(Visitor<D> visitor, char[] key, int index, boolean exact) {
-		this.visit(visitor, key, index, 0, exact);
+	public void visit(Visitor<D> visitor, int depth, char[] key, int index, boolean exact) {
+		this.visit(visitor, depth, key, index, exact, 0);
 	}
 	
-	private void visit(Visitor<D> visitor, char[] key, int index, int visits, boolean exact) {
+	private void visit(Visitor<D> visitor, int depth, char[] key, int index, boolean exact, int visits) {
+		// todo: better visit guard for optional/endless wildcard
+		if(visits > 1) {
+			return;
+		}
+		
 		// nothing to do here
 		if(index >= key.length) {
 			if(!exact && this.matcher.optional()) {
-				visitor.at(this, index-1, visits, key, exact);
+				visitor.at(this, depth, 0, key, index, exact);
 			}
 			return;
 		}
@@ -34,9 +39,12 @@ class DirectionalNode<D> extends AbstractNode<D> {
 		Character local = Character.valueOf(key[index]);
 		if(this.matcher.match(local, exact)) {
 			if(index == key.length - 1) {
-				visitor.at(this, index, visits, key, exact);
+				visitor.at(this, depth, 0, key, index, exact);
 			} else {
-				this.visit(visitor, key, index+1, visits+1, exact);
+				if(!exact && this.matcher.optional()) {
+					this.visit(visitor, depth+1, key, index, exact, visits+1);
+				}
+				this.visit(visitor, depth+1, key, index+1, exact, visits+1);
 			}
 		}
 		
@@ -46,7 +54,7 @@ class DirectionalNode<D> extends AbstractNode<D> {
 			}
 			
 			if(this.higher != null) {
-				this.higher.visit(visitor, key, index, exact);
+				this.higher.visit(visitor, depth, key, index, exact);
 			}
 		} 
 		
@@ -56,11 +64,11 @@ class DirectionalNode<D> extends AbstractNode<D> {
 			}
 			
 			if(this.lower != null) {
-				this.lower.visit(visitor, key, index, exact);
+				this.lower.visit(visitor, depth, key, index, exact);
 			}
 		}
 	}
-	
+		
 	@Override
 	public void print(String prefix, String describe,  boolean isTail) {
 		String nodeString = prefix + (isTail ? "└── " : "├── ") + " " + describe + " " + this.matcher.value();
@@ -94,8 +102,4 @@ class DirectionalNode<D> extends AbstractNode<D> {
 		return this.higher;
 	}
 
-	@Override
-	public boolean optional() {
-		return false;
-	}
 }
