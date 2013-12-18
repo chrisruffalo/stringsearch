@@ -5,7 +5,7 @@ import com.github.chrisruffalo.searchstring.InternalNode;
 public class DeletingVisitor<D> implements Visitor<D> {
 
 	@Override
-	public void at(InternalNode<D> node, int depth, int localVisits, char[] key, int index, boolean exact) {
+	public void at(InternalNode<D> node, int index, char[] key, boolean exact) {
 		
 	}
 

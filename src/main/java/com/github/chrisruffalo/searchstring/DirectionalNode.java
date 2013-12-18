@@ -1,9 +1,11 @@
 package com.github.chrisruffalo.searchstring;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.github.chrisruffalo.searchstring.config.SearchConfiguration;
 import com.github.chrisruffalo.searchstring.matcher.Matcher;
 import com.github.chrisruffalo.searchstring.visitor.Visitor;
-
 
 class DirectionalNode<D> extends AbstractNode<D> {
 	
@@ -11,42 +13,44 @@ class DirectionalNode<D> extends AbstractNode<D> {
 	
 	private InternalNode<D> higher;
 
+	private InternalNode<D> same;
+	
 	private InternalNode<D> lower;
+	
+	private Logger logger;
 	
 	public DirectionalNode(Matcher matcher, SearchConfiguration configuration) {
 		super(configuration);
 		this.matcher = matcher;
+		this.logger = LoggerFactory.getLogger(matcher.value() + "-directional");
 	}
 	
-	public void visit(Visitor<D> visitor, int depth, char[] key, int index, boolean exact) {
-		this.visit(visitor, depth, key, index, exact, 0);
-	}
-	
-	private void visit(Visitor<D> visitor, int depth, char[] key, int index, boolean exact, int visits) {
-		// todo: better visit guard for optional/endless wildcard
-		if(visits > 1) {
-			return;
-		}
+	public void visit(Visitor<D> visitor, char[] key, int index, boolean exact) {
+		this.logger.trace("visiting with key {} at index {}", new String(key), index);
 		
 		// nothing to do here
 		if(index >= key.length) {
-			if(!exact && this.matcher.optional()) {
-				visitor.at(this, depth, 0, key, index, exact);
-			}
 			return;
 		}
 		
 		Character local = Character.valueOf(key[index]);
 		if(this.matcher.match(local, exact)) {
 			if(index == key.length - 1) {
-				visitor.at(this, depth, 0, key, index, exact);
-			} else {
-				if(!exact && this.matcher.optional()) {
-					this.visit(visitor, depth+1, key, index, exact, visits+1);
+				visitor.at(this, index, key, exact);
+				if(this.same != null && this.same.attracts(exact)) {
+					this.same.visit(visitor, key, index+1, exact);
 				}
-				this.visit(visitor, depth+1, key, index+1, exact, visits+1);
+			} else {
+				if(visitor.construct() && this.same == null) {
+					Character next = key[index+1];
+					this.same = this.construct(next);
+				}
+				
+				if(this.same != null) {
+					this.same.visit(visitor, key, index+1, exact);
+				}
 			}
-		}
+		} 
 		
 		if(this.matcher.compare(local) < 0 || (this.higher != null && !exact && this.higher.attracts(exact))) {
 			if(visitor.construct() && this.higher == null) {
@@ -54,7 +58,7 @@ class DirectionalNode<D> extends AbstractNode<D> {
 			}
 			
 			if(this.higher != null) {
-				this.higher.visit(visitor, depth, key, index, exact);
+				this.higher.visit(visitor, key, index, exact);
 			}
 		} 
 		
@@ -64,22 +68,22 @@ class DirectionalNode<D> extends AbstractNode<D> {
 			}
 			
 			if(this.lower != null) {
-				this.lower.visit(visitor, depth, key, index, exact);
+				this.lower.visit(visitor, key, index, exact);
 			}
 		}
 	}
-		
+	
 	@Override
 	public void print(String prefix, String describe,  boolean isTail) {
-		String nodeString = prefix + (isTail ? "└── " : "├── ") + " " + describe + " " + this.matcher.value();
-		String content = this.contentString();
-		if(content != null  && !content.isEmpty()) {
-			nodeString = nodeString + " -> "  + content;
-		}
-        System.out.println(nodeString);
+        System.out.println(prefix + (isTail ? "└── " : "├── ") + " " + describe + " " + this.matcher.value() + " -> " + this.contentString());
         if(this.higher != null) {
-        	this.higher.print(prefix + (isTail ? "    " : "│   ") , "[HIGH]", this.lower == null);
+        	this.higher.print(prefix + (isTail ? "    " : "│   ") , "[HIGH]", this.lower == null && this.same == null);
         }
+        
+        if(this.same != null) {
+        	this.same.print(prefix + (isTail ? "    " : "│   ") , "[SAME]", this.lower == null);
+        }
+
         if(this.lower != null) {
         	this.lower.print(prefix + (isTail ? "    " : "│   ") , "[LOW]", true);
         }
@@ -87,7 +91,12 @@ class DirectionalNode<D> extends AbstractNode<D> {
 	
 	@Override
 	public boolean attracts(boolean exact) {
-		return this.matcher.attracts(exact);
+		return this.matcher.attracts(exact)
+			   || !exact && (
+			          (this.higher != null && this.higher.attracts(exact))
+			       || (this.lower != null && this.lower.attracts(exact))
+			   )
+			;
 	}
 	
 	Character value() {
@@ -98,8 +107,16 @@ class DirectionalNode<D> extends AbstractNode<D> {
 		return this.lower;
 	}
 	
+	InternalNode<D> same() {
+		return this.same;
+	}
+	
 	InternalNode<D> high() {
 		return this.higher;
 	}
 
+	@Override
+	public boolean optional() {
+		return false;
+	}
 }

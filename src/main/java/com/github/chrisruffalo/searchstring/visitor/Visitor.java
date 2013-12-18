@@ -4,7 +4,7 @@ import com.github.chrisruffalo.searchstring.InternalNode;
 
 public interface Visitor<D> {
 
-	void at(InternalNode<D> node, int depth, int localVisits, char[] key, int index, boolean exact);
+	void at(InternalNode<D> node, int index, char[] key, boolean exact);
 	
 	boolean construct();
 	

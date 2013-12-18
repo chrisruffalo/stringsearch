@@ -21,13 +21,16 @@ public class DirectionalNodeTest extends AbstractTernaryTestCase {
 		Assert.assertNull(base.high());
 
 		DirectionalNode<String> low = (DirectionalNode<String>) base.low();
+		DirectionalNode<String> same = (DirectionalNode<String>) base.same();
 		DirectionalNode<String> high = (DirectionalNode<String>) base.high();
 		Assert.assertNull(low);
 		Assert.assertNull(high);
-		Assert.assertEquals(Character.valueOf('a'), low.value());
+		Assert.assertNotNull(same);
+		Assert.assertEquals(Character.valueOf('a'), same.value());
 
 		base.put("qb", (String) null);
-		Assert.assertNotNull(low.high());
+		Assert.assertNull(same.low());
+		Assert.assertNotNull(same.high());
 	}
 
 	@Test
@@ -87,22 +90,26 @@ public class DirectionalNodeTest extends AbstractTernaryTestCase {
 	    any.put("abc", "first");
 	    any.put("gbc", "second");
 	    
-	    //any.print();
-	    
 	    DirectionalNode<String> firstBranch = (DirectionalNode<String>)any.high();
 	    
 	    Assert.assertNotNull(firstBranch);
-	    Assert.assertEquals(Character.valueOf('b'), firstBranch.value());
+	    Assert.assertEquals(Character.valueOf('a'), firstBranch.value());
 	    
 	    // get b-point's children (c and a)
 	    DirectionalNode<String> high = (DirectionalNode<String>)firstBranch.high();
 	    DirectionalNode<String> low = (DirectionalNode<String>)firstBranch.low();
+	    DirectionalNode<String> same = (DirectionalNode<String>)firstBranch.same();
 	    
 	    Assert.assertNotNull(high);
-	    Assert.assertNotNull(low);
+	    Assert.assertNotNull(same);
+	    Assert.assertNull(low);
 	    
 	    // high is available
-	    Assert.assertEquals(Character.valueOf('c'), high.value());
+	    Assert.assertEquals(Character.valueOf('g'), high.value());
+	    
+	    // # -> b -> c -> g
+	    DirectionalNode<String> highSame = (DirectionalNode<String>)high.same();
+	    Assert.assertEquals(Character.valueOf('b'), highSame.value());
 	    
 	    // basic lookup
 	    this.check(any, 1, "#bc", true, "any");

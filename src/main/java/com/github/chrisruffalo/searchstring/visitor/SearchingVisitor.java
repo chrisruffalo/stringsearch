@@ -15,14 +15,14 @@ public class SearchingVisitor<D> implements Visitor<D> {
 	}
 	
 	@Override
-	public void at(InternalNode<D> node, int depth, int localVisits, char[] key, int index, boolean exact) {
-		Set<D> foundAtNode = node.get(depth, localVisits);
+	public void at(InternalNode<D> node, int index, char[] key, boolean exact) {
+		Set<D> foundAtNode = node.get(index);
 		if(foundAtNode != null && !foundAtNode.isEmpty()) {
 			// lazy init of set when it has some results
 			if(this.results == null) {
 				this.results = new LinkedHashSet<>();
 			}
-			this.results.addAll(foundAtNode);
+			this.results.addAll(node.get(index));
 		}
 	}
 	
