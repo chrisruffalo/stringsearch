@@ -2,7 +2,7 @@ package com.github.chrisruffalo.searchstring;
 
 import org.junit.Test;
 
-public class SearchTreeTest extends AbstractTernaryTestCase {
+public class SearchTreeTest extends AbstractSearchTreeTestCase {
 
 	@Test
 	public void doubleRepeatingAnyAndLiteralTest() {

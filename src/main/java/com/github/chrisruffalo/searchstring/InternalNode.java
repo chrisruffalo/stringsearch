@@ -7,7 +7,7 @@ import com.github.chrisruffalo.searchstring.visitor.Visitor;
 
 public interface InternalNode<D> extends SearchNode<D> {
 
-	Set<D> get(int index);
+	Set<D> get();
 
 	/**
 	 * The internal find method that is, in general, hidden from external users
@@ -19,7 +19,7 @@ public interface InternalNode<D> extends SearchNode<D> {
 	 */
 	Set<D> find(String key, boolean exact);
 	
-	void add(int index, Collection<D> values);
+	void add(Collection<D> values);
 	
 	void visit(Visitor<D> visitor, char[] key, int index, boolean exact);
 	

@@ -66,14 +66,14 @@ public abstract class AbstractNode<D> implements InternalNode<D> {
 	}
 	
 	@Override
-	public Set<D> get(int depth) {
+	public Set<D> get() {
 		if(this.values == null) {
 			return Collections.emptySet();
 		}
 		return Collections.unmodifiableSet(this.values);
 	}
 	
-	public void add(int depth, Collection<D> values) {
+	public void add(Collection<D> values) {
 		if(values == null || values.isEmpty()) {
 			return;
 		}

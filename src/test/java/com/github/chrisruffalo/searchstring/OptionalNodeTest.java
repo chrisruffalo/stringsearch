@@ -10,7 +10,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OptionalNodeTest extends AbstractTernaryTestCase {
+public class OptionalNodeTest extends AbstractSearchTreeTestCase {
 
 	private static final int MAX_RANDOM_SHUFFLES = 2000;
 	

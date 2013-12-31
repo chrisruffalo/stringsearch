@@ -7,7 +7,7 @@ import com.github.chrisruffalo.searchstring.config.DefaultSearchConfiguration;
 import com.github.chrisruffalo.searchstring.matcher.AnyCharacterMatcher;
 import com.github.chrisruffalo.searchstring.matcher.LiteralCharacterMatcher;
 
-public class DirectionalNodeTest extends AbstractTernaryTestCase {
+public class DirectionalNodeTest extends AbstractSearchTreeTestCase {
 
 	@Test
 	public void testLiteralBasicAdd() {

@@ -11,7 +11,7 @@ import org.junit.Assert;
 
 import com.google.common.collect.Collections2;
 
-public abstract class AbstractTernaryTestCase {
+public abstract class AbstractSearchTreeTestCase {
 	
 	public Collection<List<Seed>> permutate(Seed... seeds) {
 		if(seeds == null || seeds.length < 1) {
