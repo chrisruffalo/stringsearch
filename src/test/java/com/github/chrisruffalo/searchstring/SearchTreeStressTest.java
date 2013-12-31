@@ -15,9 +15,9 @@ public class SearchTreeStressTest {
 	// in percent
 	private static final int LOG_INTERVAL = 10;
 	
-	private static final int SIZE = 1000;
+	private static final int SIZE = 10000;
 	
-	private static final int LENGTH = 50;
+	private static final int LENGTH = 150;
 	
 	@Test
 	public void stressWithWildcards() {
@@ -77,13 +77,16 @@ public class SearchTreeStressTest {
 		// choose random prefix
 		StringBuilder builder = new StringBuilder("");
 		
-		// a-z, 0-9, with optional # and *
-		int max = (wildcards) ? 38 : 36;
+		// a-z, 0-9, with optional #, ?, and *
+		int max = (wildcards) ? 39 : 36;
 		
 		for(int i = 0; i < LENGTH; i++) {
 			double iRandom = Math.random();
 			int iChar = (int)(iRandom * max); 
 			switch(iChar) {
+				case 38:
+					builder.append("?");
+					break;
 				case 37:
 					builder.append("#");
 					break;

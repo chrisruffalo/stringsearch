@@ -5,7 +5,9 @@ import java.util.Set;
 
 public interface SearchNode<D> {
 
-	Set<D> find(String key, boolean exact);
+	Set<D> find(String key);
+	
+	Set<D> lookup(String key);
 	
 	void put(String key, D value);
 	

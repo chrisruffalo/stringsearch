@@ -21,6 +21,16 @@ public abstract class AbstractNode<D> implements InternalNode<D> {
 	}
 
 	@Override
+	public Set<D> lookup(String key) {
+		return this.find(key, true);
+	}
+	
+	@Override
+	public Set<D> find(String key) {
+		return this.find(key, false);
+	}
+	
+	@Override
 	public Set<D> find(String key, boolean exact) {
 		SearchingVisitor<D> visitor = new SearchingVisitor<>();
 		this.visit(visitor, key.toCharArray(), 0, exact);

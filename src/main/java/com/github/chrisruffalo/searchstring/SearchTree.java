@@ -21,9 +21,18 @@ public class SearchTree<D> implements SearchNode<D> {
 	public SearchTree(SearchConfiguration configuration) {
 		this.configuration = configuration;
 	}
+
+	@Override
+	public Set<D> lookup(String key) {
+		return this.find(key, true);
+	}
 	
 	@Override
-	public Set<D> find(String key, boolean exact) {
+	public Set<D> find(String key) {
+		return this.find(key, false);
+	}
+	
+	protected Set<D> find(String key, boolean exact) {
 		if(this.root != null) {
 			return this.root.find(key, exact);
 		}

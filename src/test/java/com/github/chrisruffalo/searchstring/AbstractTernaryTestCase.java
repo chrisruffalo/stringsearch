@@ -33,9 +33,15 @@ public abstract class AbstractTernaryTestCase {
 	}
 	
 	public void check(SearchNode<String> tree, int expected, String key, boolean exact, String... match) {
-
-		// get results from tree and sort
-		Set<String> actualResults = tree.find(key, exact);
+		// get results from tree based on exact and api
+		final Set<String> actualResults;
+		if(exact) {
+			actualResults = tree.lookup(key);
+		} else {
+			actualResults = tree.find(key);
+		}
+		
+		// sort results for presentation and compare
 		List<String> sortedResults = new ArrayList<String>(actualResults);
 		Collections.sort(sortedResults);
 		
