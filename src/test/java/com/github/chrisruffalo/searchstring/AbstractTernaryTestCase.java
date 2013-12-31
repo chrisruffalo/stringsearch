@@ -2,15 +2,27 @@ package com.github.chrisruffalo.searchstring;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
 import org.junit.Assert;
 
-public abstract class AbstractTernaryTestCase {
+import com.google.common.collect.Collections2;
 
-	public void seed(SearchNode<String> tree, Seed... seeds) {
+public abstract class AbstractTernaryTestCase {
+	
+	public Collection<List<Seed>> permutate(Seed... seeds) {
+		if(seeds == null || seeds.length < 1) {
+			return Collections.emptyList();
+		}
+		
+		List<Seed> initialSeeds = Arrays.asList(seeds);
+		return Collections2.permutations(initialSeeds);
+	}
+
+	public void seed(SearchNode<String> tree, List<Seed> seeds) {
 		for(Seed seed : seeds) {
 			if(seed.getKey() == null || seed.getValues() == null || seed.getValues().length == 0) {
 				continue;

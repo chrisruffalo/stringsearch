@@ -2,6 +2,7 @@ package com.github.chrisruffalo.searchstring;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.junit.Assert;
@@ -11,6 +12,15 @@ import org.slf4j.LoggerFactory;
 
 public class OptionalNodeTest extends AbstractTernaryTestCase {
 
+	private static final int MAX_RANDOM_SHUFFLES = 2000;
+	
+	/**
+	 * Test that optional search works in a majority of cases by using
+	 * a set of seeds for the test that is both rotated and shuffled
+	 * in order to try and cover a large number of insertion order
+	 * problems
+	 * 
+	 */
 	@Test
 	public void testBasicOptional() {
 		// create test logger
@@ -33,20 +43,38 @@ public class OptionalNodeTest extends AbstractTernaryTestCase {
 			new Seed("??", "duo-3"),
 			new Seed("z?????z", "zman")
 		};
+		List<Seed> origin = Arrays.asList(seeds);
 		
-		// rotate the seed list to make sure that
-		// insertion order doesn't matter in terms
-		// of the different ways that the search
-		// works
-		for(int i = 0; i < seeds.length; i++) {
-			logger.trace("rotation: {}", i);
+		// we need to create a collection of lists
+		// that combine to create some sort of insurance
+		// against insertion order problems.  the list
+		// is pretty large so every permutation combined
+		// produces a prohibitively large set to check
+		List<List<Seed>> seedCombinationList = new LinkedList<>();
+		for(int i = 1; i < seeds.length; i++) {
+			List<Seed> instance = new LinkedList<>(origin);
+			Collections.rotate(instance, i);
+			seedCombinationList.add(instance);
+		}
+		
+		// now create a number of shuffled lists to help close the gap
+		// between every permutation and a simple list rotate
+		for(int i = 0; i < OptionalNodeTest.MAX_RANDOM_SHUFFLES; i++) {
+			List<Seed> instance = new LinkedList<>(origin);
+			Collections.shuffle(instance);
+			seedCombinationList.add(instance);
+		}
+		
+		// iterate through all the combinations created in previous
+		// steps to ensure that (within reason) insertion order
+		// is not a factor
+		int i = 1;
+		for(List<Seed> currentCombination : seedCombinationList) {
+			logger.trace("combination: {} (of {}) = {}", i, seedCombinationList.size(), currentCombination);
 			
-			// seed tree
-			this.seed(test, seeds);
-			
-			// help with debug
-			//test.print();
-			
+			// seed tree with current combination
+			this.seed(test, currentCombination);
+
 			// do the usual exact matches
 			this.check(test, 1, "?bc", true, "one");
 			this.check(test, 1, "a?c", true, "two");
@@ -101,17 +129,14 @@ public class OptionalNodeTest extends AbstractTernaryTestCase {
 			this.check(test, 4, "ab", false, "duo-1", "duo-2", "two-two", "duo-3");
 			this.check(test, 3, "d", false, "duo-1", "duo-2", "duo-3");
 			
-			// rotate
-			List<Seed> temp = Arrays.asList(seeds);
-			Collections.rotate(temp, 1);
-			seeds = temp.toArray(new Seed[temp.size()]);
+			// update index
+			i++;			
 			
 			// recreate tree
 			test = new SearchTree<>();
 		}
-				
 	}
-
+	
 	/**
 	 * Very specific test for the case where
 	 * for some reason the optional nodes were
@@ -123,8 +148,6 @@ public class OptionalNodeTest extends AbstractTernaryTestCase {
 	public void testRepeatingExactWithOptional() {
 		SearchTree<String> test = new SearchTree<>();
 		test.put("z?????z", "zman");
-		
-		//test.print();
 		
 		// exact searches with stacked ?'s
 		this.check(test, 0, "zXXXXXz", true);
