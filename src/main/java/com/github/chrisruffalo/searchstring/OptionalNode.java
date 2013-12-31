@@ -15,6 +15,8 @@ public class OptionalNode<D> extends AbstractNode<D> {
 	
 	private InternalNode<D> next;
 	
+	private InternalNode<D> shunt;
+	
 	private Logger logger;
 		
 	public OptionalNode(Matcher matcher, boolean sink, SearchConfiguration configuration) {
@@ -26,7 +28,7 @@ public class OptionalNode<D> extends AbstractNode<D> {
 	
 	@Override
 	public void visit(Visitor<D> visitor, char[] key, int index, boolean exact) {
-		this.logger.trace("visiting with key {} at index {}", new String(key), index);
+		this.logger.info("visiting with key {} at index {}", new String(key), index);
 		 
 		// if you got here at the end of a chain and the
 		// match is not exact that's ok, this is optional!
@@ -38,29 +40,49 @@ public class OptionalNode<D> extends AbstractNode<D> {
 			return;
 		}
 		
-		boolean end = false;
-				
-		Character local = Character.valueOf(key[index]);
-		boolean matches = this.matcher.match(local, exact);
+		Character input = Character.valueOf(key[index]);
+		boolean matches = this.matcher.match(input, exact);
 		
-		if(matches) {
-			if(index == key.length - 1) {
-				visitor.at(this, index, key, exact);
-				end = true;
+		if(exact) {
+			if(matches) {
+				if(index == key.length - 1) {
+					visitor.at(this, index, key, exact);
+					return;
+				}
+				if(this.next == null && visitor.construct()) {
+					Character next = key[index+1];
+					this.next = this.construct(next);
+				}
+				if(this.next != null) {
+					this.next.visit(visitor, key, index+1, exact);
+				}
+			} else {
+				if(this.shunt == null && visitor.construct()) {
+					Character next = key[index];
+					this.shunt = this.construct(next);
+				}
+				if(this.shunt != null) {
+					this.shunt.visit(visitor, key, index, exact);
+				}
 			}
-			if(!exact && this.next != null) {
+		} else {
+			if(matches) {
+				if(index == key.length - 1) {
+					visitor.at(this, index, key, exact);
+				}
+				if(this.next != null) {
+					this.next.visit(visitor, key, index+1, exact);
+				}
+				if(this.shunt != null && !matches) {
+					this.shunt.visit(visitor, key, index+1, exact);
+				}
+			}
+			if(this.next != null) {
 				this.next.visit(visitor, key, index, exact);
-			} 
-			index++;
-		}
-		
-		if(!end && exact && visitor.construct() && this.next == null) {
-			Character next = key[index];
-			this.next = this.construct(next);
-		}
-		
-		if(this.next != null) {
-			this.next.visit(visitor, key, index, exact);
+			}		
+			if(this.shunt != null && !matches) {
+				this.shunt.visit(visitor, key, index, exact);
+			}
 		}
 	}
 
@@ -73,7 +95,10 @@ public class OptionalNode<D> extends AbstractNode<D> {
 	public void print(String prefix, String describe, boolean isTail) {
         System.out.println(prefix + (isTail ? "└── " : "├── ") + " " + describe + " " + this.matcher.value() + " -> " + this.contentString());
         if(this.next != null) {
-        	this.next.print(prefix + (isTail ? "    " : "│   ") , "[NEXT]", true);
+        	this.next.print(prefix + (isTail ? "     " : "│   ") , "[NEXT]", this.shunt == null);
+        }
+        if(this.shunt != null) {
+        	this.shunt.print(prefix + (isTail ? "     " : "│   ") , "[SHUNT]", true);
         }
 	}
 	@Override

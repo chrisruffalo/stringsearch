@@ -26,7 +26,7 @@ class DirectionalNode<D> extends AbstractNode<D> {
 	}
 	
 	public void visit(Visitor<D> visitor, char[] key, int index, boolean exact) {
-		this.logger.trace("visiting with key {} at index {}", new String(key), index);
+		this.logger.info("visiting with key {} at index {}", new String(key), index);
 		
 		// nothing to do here
 		if(index >= key.length) {
@@ -77,15 +77,15 @@ class DirectionalNode<D> extends AbstractNode<D> {
 	public void print(String prefix, String describe,  boolean isTail) {
         System.out.println(prefix + (isTail ? "└── " : "├── ") + " " + describe + " " + this.matcher.value() + " -> " + this.contentString());
         if(this.higher != null) {
-        	this.higher.print(prefix + (isTail ? "    " : "│   ") , "[HIGH]", this.lower == null && this.same == null);
+        	this.higher.print(prefix + (isTail ? "     " : "│   ") , "[HIGH]", this.lower == null && this.same == null);
         }
         
         if(this.same != null) {
-        	this.same.print(prefix + (isTail ? "    " : "│   ") , "[SAME]", this.lower == null);
+        	this.same.print(prefix + (isTail ? "     " : "│   ") , "[SAME]", this.lower == null);
         }
 
         if(this.lower != null) {
-        	this.lower.print(prefix + (isTail ? "    " : "│   ") , "[LOW]", true);
+        	this.lower.print(prefix + (isTail ? "     " : "│   ") , "[LOW]", true);
         }
     }
 	
