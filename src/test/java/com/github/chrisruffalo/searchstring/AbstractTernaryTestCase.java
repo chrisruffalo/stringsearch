@@ -21,32 +21,72 @@ public abstract class AbstractTernaryTestCase {
 	}
 	
 	public void check(SearchNode<String> tree, int expected, String key, boolean exact, String... match) {
+
+		// get results from tree and sort
 		Set<String> actualResults = tree.find(key, exact);
 		List<String> sortedResults = new ArrayList<String>(actualResults);
 		Collections.sort(sortedResults);
 		
-		if(expected != actualResults.size()) {
-			StringBuilder builder = new StringBuilder();
-			builder.append("found: {");
-			boolean first = true;
-			for(String result : sortedResults) {
-				if(!first) {
-					builder.append(", ");
-				}
-				first = false;
-				builder.append(result);
-				
-			}
-			builder.append("}");
-			System.out.println(builder.toString());
-		}
-		Assert.assertEquals(expected, actualResults.size());
-		if(match != null && match.length > 0) {
-			List<String> expectedResults = Arrays.asList(match);
+		// get expected matchs if any exist
+		final List<String> expectedResults;
+		if(match != null && match.length > 0) { 
+			expectedResults = Arrays.asList(match);
 			Collections.sort(expectedResults);
-			
+		} else {
+			expectedResults = Collections.emptyList();
+		}
+		
+		// compute error string
+		String error = this.buildNoMatchString(key, sortedResults, expectedResults);
+
+		// do check and show error if a problem happens
+		try {
+			this.doCheck(expected, key, exact, sortedResults, expectedResults);
+		} catch (AssertionError ae) {
+			System.out.println(error);
+			tree.print();
+			// re-throw error because we just want status
+			// on it and not to stop it.
+			throw ae;
+		}
+	}
+	
+	public void doCheck(int expected, String key, boolean exact, List<String> sortedResults, List<String> expectedResults) {
+		Assert.assertEquals(expected, sortedResults.size());
+		if(expectedResults != null && !expectedResults.isEmpty()) {
 			Assert.assertEquals(expectedResults, sortedResults);
 		}
+	}
+
+	private String buildNoMatchString(String key, List<String> results, List<String> expectedResults) {
+		
+		StringBuilder builder = new StringBuilder();
+		builder.append("found: {");
+		builder.append(this.arrayToStringList(results));
+		builder.append("} for key '");
+		builder.append(key);
+		builder.append("'");
+		
+		if(expectedResults != null && !expectedResults.isEmpty()) {
+			builder.append(" but expected {");
+			builder.append(this.arrayToStringList(expectedResults));
+			builder.append("}");
+		}
+		
+		return builder.toString();
+	}
+	
+	private String arrayToStringList(List<String> inputs) {
+		StringBuilder builder = new StringBuilder();
+		boolean first = true;
+		for(String input : inputs) {
+			if(!first) {
+				builder.append(", ");
+			}
+			first = false;
+			builder.append(input);
+		}
+		return builder.toString();
 	}
 	
 }

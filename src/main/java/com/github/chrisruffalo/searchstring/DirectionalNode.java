@@ -26,7 +26,7 @@ class DirectionalNode<D> extends AbstractNode<D> {
 	}
 	
 	public void visit(Visitor<D> visitor, char[] key, int index, boolean exact) {
-		this.logger.info("visiting with key {} at index {}", new String(key), index);
+		this.logger.trace("visiting with key {} at index {}", new String(key), index);
 		
 		// nothing to do here
 		if(index >= key.length) {
@@ -38,7 +38,7 @@ class DirectionalNode<D> extends AbstractNode<D> {
 			if(index == key.length - 1) {
 				visitor.at(this, index, key, exact);
 				if(this.same != null && this.same.attracts(exact)) {
-					this.same.visit(visitor, key, index+1, exact);
+					this.same.visit(visitor, key, index, exact);
 				}
 			} else {
 				if(visitor.construct() && this.same == null) {

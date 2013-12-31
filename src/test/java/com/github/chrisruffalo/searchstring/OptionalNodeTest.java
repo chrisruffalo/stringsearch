@@ -6,11 +6,16 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class OptionalNodeTest extends AbstractTernaryTestCase {
 
 	@Test
 	public void testBasicOptional() {
+		// create test logger
+		Logger logger = LoggerFactory.getLogger(this.getClass());
+		
 		SearchTree<String> test = new SearchTree<>();
 		
 		Assert.assertTrue(test.configuration().optional().contains('?'));
@@ -34,13 +39,13 @@ public class OptionalNodeTest extends AbstractTernaryTestCase {
 		// of the different ways that the search
 		// works
 		for(int i = 0; i < seeds.length; i++) {
-			System.out.println("rotation: " + i);
+			logger.trace("rotation: {}", i);
 			
 			// seed tree
 			this.seed(test, seeds);
 			
 			// help with debug
-			test.print();
+			//test.print();
 			
 			// do the usual exact matches
 			this.check(test, 1, "?bc", true, "one");
@@ -59,7 +64,7 @@ public class OptionalNodeTest extends AbstractTernaryTestCase {
 			this.check(test, 0, "abcdefg", true);
 			
 			// expecting some basic other matches
-			//this.check(test, 4, "abc", false, "one", "two", "two-two", "thr");
+			this.check(test, 4, "abc", false, "one", "two", "two-two", "thr");
 			this.check(test, 1, "ebc", false, "one");
 			this.check(test, 1, "jbc", false, "one");
 			this.check(test, 1, "Xbc", false, "one");
@@ -85,15 +90,15 @@ public class OptionalNodeTest extends AbstractTernaryTestCase {
 			
 			// exact searches with stacked ?'s
 			this.check(test, 0, "zXXXXXz", true);
-			//this.check(test, 1, "z?????z", true, "zman");
-			//this.check(test, 0, "z????z", true);
-			//this.check(test, 0, "z???z", true);
-			//this.check(test, 0, "z??z", true);
-			//this.check(test, 0, "z?z", true);
-			//this.check(test, 0, "zz", true);		
+			this.check(test, 1, "z?????z", true, "zman");
+			this.check(test, 0, "z????z", true);
+			this.check(test, 0, "z???z", true);
+			this.check(test, 0, "z??z", true);
+			this.check(test, 0, "z?z", true);
+			this.check(test, 0, "zz", true);		
 			
 			// checking end optional
-			//this.check(test, 4, "ab", false, "duo-1", "duo-2", "two-two", "duo-3");
+			this.check(test, 4, "ab", false, "duo-1", "duo-2", "two-two", "duo-3");
 			this.check(test, 3, "d", false, "duo-1", "duo-2", "duo-3");
 			
 			// rotate

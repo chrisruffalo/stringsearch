@@ -28,7 +28,7 @@ public class OptionalNode<D> extends AbstractNode<D> {
 	
 	@Override
 	public void visit(Visitor<D> visitor, char[] key, int index, boolean exact) {
-		this.logger.info("visiting with key {} at index {}", new String(key), index);
+		this.logger.trace("visiting with key {} at index {}", new String(key), index);
 		 
 		// if you got here at the end of a chain and the
 		// match is not exact that's ok, this is optional!
@@ -73,14 +73,11 @@ public class OptionalNode<D> extends AbstractNode<D> {
 				if(this.next != null) {
 					this.next.visit(visitor, key, index+1, exact);
 				}
-				if(this.shunt != null && !matches) {
-					this.shunt.visit(visitor, key, index+1, exact);
-				}
 			}
 			if(this.next != null) {
 				this.next.visit(visitor, key, index, exact);
 			}		
-			if(this.shunt != null && !matches) {
+			if(this.shunt != null) {
 				this.shunt.visit(visitor, key, index, exact);
 			}
 		}
