@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
 
+import com.github.chrisruffalo.searchstring.NodeFactory;
+
 public class SearchConfigurationImpl implements SearchConfiguration {
 	
 	private Set<Character> wildcards;
@@ -12,7 +14,9 @@ public class SearchConfigurationImpl implements SearchConfiguration {
 	
 	private Set<Character> any;
 	
-	boolean isCaseSensitive = true;
+	private boolean isCaseSensitive = true;
+	
+	private NodeFactory nodeFactory;
 	
 	public SearchConfigurationImpl() {
 		this.wildcards = new TreeSet<>();
@@ -62,13 +66,25 @@ public class SearchConfigurationImpl implements SearchConfiguration {
 		return this.isCaseSensitive;
 	}
 
+	public void nodeFactory(NodeFactory factory) {
+		this.nodeFactory = factory;
+	}
+	
+	@Override
+	public NodeFactory nodeFactory() {
+		return this.nodeFactory;
+	}
+	
+	@Override
 	public SearchConfiguration copy() {
 		SearchConfigurationImpl copy = new SearchConfigurationImpl();
 		copy.wildcards = new TreeSet<>(this.wildcards);
 		copy.optionals = new TreeSet<>(this.optionals);
 		copy.any = new TreeSet<>(this.any);
 		copy.isCaseSensitive = this.isCaseSensitive;
+		copy.nodeFactory = this.nodeFactory;
 		
 		return copy;
 	}
+	
 }

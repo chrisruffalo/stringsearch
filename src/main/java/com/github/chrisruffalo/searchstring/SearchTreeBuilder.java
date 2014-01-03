@@ -1,5 +1,6 @@
 package com.github.chrisruffalo.searchstring;
 
+import com.github.chrisruffalo.searchstring.config.DefaultSearchConfiguration;
 import com.github.chrisruffalo.searchstring.config.SearchConfigurationImpl;
 
 
@@ -8,7 +9,7 @@ public class SearchTreeBuilder {
 	private SearchConfigurationImpl configuration;
 	
 	public SearchTreeBuilder() {
-		 this.configuration = new SearchConfigurationImpl();
+		 this.configuration = new DefaultSearchConfiguration();
 	}
 	
 	public SearchTreeBuilder addWildcardCharacter(Character wildcard) {
@@ -28,6 +29,11 @@ public class SearchTreeBuilder {
 	
 	public SearchTreeBuilder caseSensitive(boolean sensitive) {
 		this.configuration.setCaseSensitive(sensitive);
+		return this;
+	}
+	
+	public SearchTreeBuilder nodeFactory(NodeFactory factory) {
+		this.configuration.nodeFactory(factory);
 		return this;
 	}
 	

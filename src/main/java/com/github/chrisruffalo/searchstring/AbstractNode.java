@@ -16,8 +16,19 @@ public abstract class AbstractNode<D> implements InternalNode<D> {
 	
 	private SearchConfiguration configuration;
 	
+	private NodeFactory nodeFactory;
+	
 	public AbstractNode(SearchConfiguration configuration) {
+		if(configuration == null) {
+			throw new IllegalArgumentException("Provided search configuration must not be null");
+		}
 		this.configuration = configuration;
+		
+		NodeFactory factory = this.configuration.nodeFactory();
+		if(factory == null) {
+			throw new IllegalArgumentException("Provided node factory must not be null");
+		}
+		this.nodeFactory = factory;
 	}
 
 	@Override
@@ -112,7 +123,7 @@ public abstract class AbstractNode<D> implements InternalNode<D> {
 	}
 	
 	protected InternalNode<D> construct(Character local) {
-		return NodeFactory.create(this, local, this.configuration);
+		return this.nodeFactory.create(local, this.configuration);
 	}
 	
 	public void print() {

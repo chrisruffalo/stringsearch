@@ -1,5 +1,7 @@
 package com.github.chrisruffalo.searchstring.config;
 
+import com.github.chrisruffalo.searchstring.DefaultNodeFactoryImpl;
+
 public class DefaultSearchConfiguration extends SearchConfigurationImpl {
 
 	public DefaultSearchConfiguration() {
@@ -10,6 +12,8 @@ public class DefaultSearchConfiguration extends SearchConfigurationImpl {
 		this.addWildcard('*');
 		
 		this.setCaseSensitive(true);
+		
+		this.nodeFactory(new DefaultNodeFactoryImpl());
 	}
 	
 }

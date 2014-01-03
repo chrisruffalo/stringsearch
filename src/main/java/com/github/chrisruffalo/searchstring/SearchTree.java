@@ -23,12 +23,14 @@ public class SearchTree<D> implements SearchNode<D> {
 
 	private SearchConfiguration configuration;
 	
+	private NodeFactory nodeFactory;
+	
 	/**
 	 * Construct a search tree with the default configuration
 	 * 
 	 */
 	public SearchTree() {
-		this.configuration = new DefaultSearchConfiguration();
+		this(new DefaultSearchConfiguration());
 	}
 	
 	/**
@@ -37,7 +39,16 @@ public class SearchTree<D> implements SearchNode<D> {
 	 * @param configuration
 	 */
 	public SearchTree(SearchConfiguration configuration) {
+		if(configuration == null) {
+			throw new IllegalArgumentException("Provided search configuration must not be null");
+		}
 		this.configuration = configuration;
+		
+		NodeFactory factory = this.configuration.nodeFactory();
+		if(factory == null) {
+			throw new IllegalArgumentException("Provided node factory must not be null");
+		}
+		this.nodeFactory = factory;
 	}
 
 	/**
@@ -106,7 +117,7 @@ public class SearchTree<D> implements SearchNode<D> {
 		if(this.root == null) {
 			char[] keyArray = key.toCharArray();
 			Character local = keyArray[0];
-			this.root = NodeFactory.create(null, local, this.configuration);
+			this.root = this.nodeFactory.create(local, this.configuration);
 		}
 		
 		this.root.put(key, values);
