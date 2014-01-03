@@ -1,8 +1,5 @@
 package com.github.chrisruffalo.searchstring;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.github.chrisruffalo.searchstring.config.SearchConfiguration;
 import com.github.chrisruffalo.searchstring.matcher.Matcher;
 import com.github.chrisruffalo.searchstring.visitor.Visitor;
@@ -17,16 +14,12 @@ class DirectionalNode<D> extends AbstractNode<D> {
 	
 	private InternalNode<D> lower;
 	
-	private Logger logger;
-	
 	public DirectionalNode(Matcher matcher, SearchConfiguration configuration) {
 		super(configuration);
 		this.matcher = matcher;
-		this.logger = LoggerFactory.getLogger(matcher.value() + "-directional");
 	}
 	
 	public void visit(Visitor<D> visitor, char[] key, int index, boolean exact) {
-		this.logger.trace("visiting with key {} at index {}", new String(key), index);
 		
 		// nothing to do here
 		if(index >= key.length) {

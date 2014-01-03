@@ -10,7 +10,8 @@ import com.github.chrisruffalo.searchstring.matcher.Matcher;
 
 /**
  * Constructs nodes according to the configuration settings given
- * by the {@link SearchConfiguration}
+ * by the {@link SearchConfiguration} as employs a cache to
+ * reuse {@link Matcher} values
  * 
  * @author Chris Ruffalo
  *
@@ -56,8 +57,9 @@ public class DefaultNodeFactoryImpl implements NodeFactory {
 	 */
 	private Matcher getMatcher(Character local, SearchConfiguration configuration) {
 
+		char value = local.charValue();
 		// lookup matcher from cache and return if valid
-		Matcher matcher = this.matcherCache.get(local);
+		Matcher matcher = this.matcherCache.get(value);
 		if(matcher != null) {
 			return matcher;
 		}
@@ -74,7 +76,7 @@ public class DefaultNodeFactoryImpl implements NodeFactory {
 		}
 		
 		// put in cache
-		this.matcherCache.put(local, matcher);
+		this.matcherCache.put(value, matcher);
 		
 		// return constructed (now cached) matcher
 		return matcher;

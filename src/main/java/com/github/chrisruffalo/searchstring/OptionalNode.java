@@ -1,35 +1,24 @@
 package com.github.chrisruffalo.searchstring;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.github.chrisruffalo.searchstring.config.SearchConfiguration;
 import com.github.chrisruffalo.searchstring.matcher.Matcher;
 import com.github.chrisruffalo.searchstring.visitor.Visitor;
 
 public class OptionalNode<D> extends AbstractNode<D> {
 
-	final boolean sink;
-	
 	final private Matcher matcher;
 	
 	private InternalNode<D> next;
 	
 	private InternalNode<D> shunt;
-	
-	private Logger logger;
 		
 	public OptionalNode(Matcher matcher, boolean sink, SearchConfiguration configuration) {
 		super(configuration);
 		this.matcher = matcher;
-		this.sink = sink;
-		this.logger = LoggerFactory.getLogger(matcher.value() + "-optional");
 	}
 	
 	@Override
 	public void visit(Visitor<D> visitor, char[] key, int index, boolean exact) {
-		this.logger.trace("visiting with key {} at index {}", new String(key), index);
-		 
 		// if you got here at the end of a chain and the
 		// match is not exact that's ok, this is optional!
 		// so apply visitor!
