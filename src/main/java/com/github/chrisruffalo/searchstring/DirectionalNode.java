@@ -18,9 +18,12 @@ class DirectionalNode<D> extends AbstractNode<D> {
 		super(configuration);
 		this.matcher = matcher;
 	}
-	
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void visit(Visitor<D> visitor, char[] key, int index, boolean exact) {
-		
 		// nothing to do here
 		if(index >= key.length) {
 			return;
@@ -66,6 +69,9 @@ class DirectionalNode<D> extends AbstractNode<D> {
 		}
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void print(String prefix, String describe,  boolean isTail) {
         System.out.println(prefix + (isTail ? "└── " : "├── ") + " " + describe + " " + this.matcher.value() + " -> " + this.contentString());
@@ -82,6 +88,9 @@ class DirectionalNode<D> extends AbstractNode<D> {
         }
     }
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean attracts(boolean exact) {
 		return this.matcher.attracts(exact)
@@ -108,6 +117,9 @@ class DirectionalNode<D> extends AbstractNode<D> {
 		return this.higher;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean optional() {
 		return false;

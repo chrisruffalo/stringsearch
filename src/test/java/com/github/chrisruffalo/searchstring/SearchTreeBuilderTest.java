@@ -13,7 +13,7 @@ public class SearchTreeBuilderTest {
 		builder.addWildcardCharacter('*')
 			   .addAnyMatchCharacter('#')
 			   .addOptionalCharacter('?');
-		SearchTree<String> tree = builder.build();
+		ISearchTree<String> tree = builder.build();
 		
 		SearchConfiguration config = tree.configuration();
 		

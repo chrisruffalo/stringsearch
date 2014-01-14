@@ -37,7 +37,7 @@ public class SearchTreeBuilder {
 		return this;
 	}
 	
-	public <D> SearchTree<D> build() {
+	public <D> ISearchTree<D> build() {
 		return new SearchTree<>(this.configuration.copy());
 	}
 }

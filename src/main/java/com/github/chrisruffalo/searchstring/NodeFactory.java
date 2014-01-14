@@ -1,6 +1,7 @@
 package com.github.chrisruffalo.searchstring;
 
 import com.github.chrisruffalo.searchstring.config.SearchConfiguration;
+import com.github.chrisruffalo.searchstring.matcher.Matcher;
 
 /**
  * Interface that describes node creation to allow end-users to implement
@@ -20,5 +21,7 @@ public interface NodeFactory {
 	 * @return a newly constructed node that can be placed as a child of the parent
 	 */
 	<D> InternalNode<D> create(Character local, SearchConfiguration configuration);
+	
+	Matcher getMatcher(final Character local, final SearchConfiguration configuration);
 
 }

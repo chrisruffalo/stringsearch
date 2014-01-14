@@ -28,7 +28,7 @@ public class DefaultNodeFactoryImpl implements NodeFactory {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public <D> InternalNode<D> create(Character local, SearchConfiguration configuration) {
+	public <D> InternalNode<D> create(final Character local, final SearchConfiguration configuration) {
 		
 		// get matcher from cache or construct as needed
 		final Matcher matcher = this.getMatcher(local, configuration);
@@ -42,8 +42,7 @@ public class DefaultNodeFactoryImpl implements NodeFactory {
 		} else {
 			node = new DirectionalNode<>(matcher, configuration);
 		}
-		
-		//System.out.println(node.getClass().getName());
+
 		return node;
 	}
 	
@@ -55,9 +54,14 @@ public class DefaultNodeFactoryImpl implements NodeFactory {
 	 * @param configuration
 	 * @return
 	 */
-	private Matcher getMatcher(Character local, SearchConfiguration configuration) {
+	@Override
+	public Matcher getMatcher(final Character local, final SearchConfiguration configuration) {
 
-		char value = local.charValue();
+		if(local == null) {
+			return null;
+		}
+		
+		final char value = local.charValue();
 		// lookup matcher from cache and return if valid
 		Matcher matcher = this.matcherCache.get(value);
 		if(matcher != null) {

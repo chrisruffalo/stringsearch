@@ -11,13 +11,13 @@ import com.github.chrisruffalo.searchstring.config.SearchConfiguration;
 /**
  * Implements the root element of a search tree and
  * allows the end-user to call into a tree of search
- * nodes without the hastle of bootstrapping. 
+ * nodes without the hassle of bootstrapping. 
  * 
  * @author Chris Ruffalo
  *
  * @param <D> the type of value to store in the tree
  */
-public class SearchTree<D> implements SearchNode<D> {
+public class SearchTree<D> implements SearchNode<D>, ISearchTree<D> {
 
 	private InternalNode<D> root;
 
@@ -51,16 +51,16 @@ public class SearchTree<D> implements SearchNode<D> {
 		this.nodeFactory = factory;
 	}
 
-	/**
-	 * {@inheritDoc}
+	/* (non-Javadoc)
+	 * @see com.github.chrisruffalo.searchstring.ISearchTree#lookup(java.lang.String)
 	 */
 	@Override
 	public Set<D> lookup(String key) {
 		return this.find(key, true);
 	}
 	
-	/**
-	 * {@inheritDoc}
+	/* (non-Javadoc)
+	 * @see com.github.chrisruffalo.searchstring.ISearchTree#find(java.lang.String)
 	 */	
 	@Override
 	public Set<D> find(String key) {
@@ -82,16 +82,16 @@ public class SearchTree<D> implements SearchNode<D> {
 		return Collections.emptySet();
 	}
 
-	/**
-	 * {@inheritDoc}
+	/* (non-Javadoc)
+	 * @see com.github.chrisruffalo.searchstring.ISearchTree#put(java.lang.String, D)
 	 */	
 	@Override
 	public void put(String key, D value) {
 		this.put(key, Collections.singleton(value));
 	}
 
-	/**
-	 * {@inheritDoc}
+	/* (non-Javadoc)
+	 * @see com.github.chrisruffalo.searchstring.ISearchTree#put(java.lang.String, D[])
 	 */
 	@Override
 	public void put(String key, D[] values) {
@@ -101,8 +101,8 @@ public class SearchTree<D> implements SearchNode<D> {
 		this.put(key, Arrays.asList(values));
 	}
 
-	/**
-	 * {@inheritDoc}
+	/* (non-Javadoc)
+	 * @see com.github.chrisruffalo.searchstring.ISearchTree#put(java.lang.String, java.util.Collection)
 	 */
 	@Override
 	public void put(String key, Collection<D> values) {
@@ -123,11 +123,10 @@ public class SearchTree<D> implements SearchNode<D> {
 		this.root.put(key, values);
 	}
 	
-	/**
-	 * Get the configuration that was used to create the search tree
-	 * 
-	 * @return
+	/* (non-Javadoc)
+	 * @see com.github.chrisruffalo.searchstring.ISearchTree#configuration()
 	 */
+	@Override
 	public SearchConfiguration configuration() {
 		return this.configuration;
 	}
