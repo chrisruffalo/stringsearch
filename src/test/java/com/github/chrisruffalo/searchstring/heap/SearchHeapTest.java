@@ -8,14 +8,16 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.github.chrisruffalo.searchstring.ISearchTree;
+import com.github.chrisruffalo.searchstring.matcher.LiteralCharacterMatcher;
+import com.github.chrisruffalo.searchstring.matcher.Matcher;
 
 public class SearchHeapTest {
 
 	@Test
 	public void basicTest() {
 		// create required objects
-		Map<Integer, Character> matcherMap = new HashMap<>(0);
-		matcherMap.put(1, 'd');
+		Map<Long, Matcher> matcherMap = new HashMap<>(0);
+		matcherMap.put(1l, new LiteralCharacterMatcher('d'));
 		
 		Map<Long, Set<String>> values = new HashMap<>();
 		

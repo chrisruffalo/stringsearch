@@ -1,9 +1,9 @@
 package com.github.chrisruffalo.searchstring.heap;
 
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 public class SearchingHeapVisitor<D> implements HeapVisitor<D> {
 
@@ -13,7 +13,7 @@ public class SearchingHeapVisitor<D> implements HeapVisitor<D> {
 	
 	public SearchingHeapVisitor(Map<Long,Set<D>> targetValues) {
 		this.targetValues = targetValues;
-		this.output = new TreeSet<>();
+		this.output = new LinkedHashSet<>();
 	}
 	
 	@Override

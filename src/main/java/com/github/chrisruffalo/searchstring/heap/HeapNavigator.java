@@ -50,7 +50,7 @@ public abstract class HeapNavigator<D> {
 		this.configuration = configuration;
 	}
 	
-	public void navigate(HeapVisitor<D> visitor, Map<Integer,Character> values, String key, boolean exact) {
+	public void navigate(HeapVisitor<D> visitor, Map<Long,Matcher> values, String key, boolean exact) {
 		// die on null values
 		if(visitor == null || values == null || key == null || key.isEmpty()) {
 			return;
@@ -81,7 +81,7 @@ public abstract class HeapNavigator<D> {
 	 * @param stringIndex
 	 * @param exact
 	 */
-	protected abstract void navigate(HeapVisitor<D> visitor, Map<Integer,Character> values, long currentLevel, long indexInLevel, char[] key, int stringIndex, boolean exact);
+	protected abstract void navigate(HeapVisitor<D> visitor, Map<Long,Matcher> values, long currentLevel, long indexInLevel, char[] key, int stringIndex, boolean exact);
 
 	/**
 	 * Shortcut for navigating to child
@@ -95,11 +95,11 @@ public abstract class HeapNavigator<D> {
 	 * @param stringIndex
 	 * @param exact
 	 */
-	protected void navigateToChild(HeapVisitor<D> visitor, Map<Integer,Character> values, long currentLevel, long indexInLevel, Direction direction, char[] key, int stringIndex, boolean exact) {
+	protected void navigateToChild(HeapVisitor<D> visitor, Map<Long,Matcher> values, long currentLevel, long indexInLevel, Direction direction, char[] key, int stringIndex, boolean exact) {
 		this.navigate(visitor, values, currentLevel+1, (indexInLevel * HeapNavigator.MAX_CHILD_COUNT) + direction.offset(), key, stringIndex, exact);
 	}
 	
-	protected Matcher loadCurrent(Map<Integer,Character> values ,long levelToLoadFrom, long localOffset) {
+	protected Matcher loadCurrent(Map<Long,Matcher> values ,long levelToLoadFrom, long localOffset) {
 		// do math to get level
 		long levelIndexStartsAt = (long)Math.pow(HeapNavigator.MAX_CHILD_COUNT, levelToLoadFrom);
 		
@@ -107,15 +107,14 @@ public abstract class HeapNavigator<D> {
 		long offset = levelIndexStartsAt + localOffset;
 		
 		// return value
-		//return values.get((int)offset);
-		return this.configuration.nodeFactory().getMatcher(values.get((int)offset), this.configuration);
+		return values.get(offset);
 	}
 	
-	protected Matcher loadChild(Map<Integer,Character> values, long levelToLoadFrom, long localOffset, Direction whichDirectionToLoad) {
+	protected Matcher loadChild(Map<Long,Matcher> values, long levelToLoadFrom, long localOffset, Direction whichDirectionToLoad) {
 		return this.loadChild(values, levelToLoadFrom, localOffset, whichDirectionToLoad.offset);
 	}
 	
-	protected Matcher loadChild(Map<Integer,Character> values, long levelToLoadFrom, long localOffset, int childOffset) {
+	protected Matcher loadChild(Map<Long,Matcher> values, long levelToLoadFrom, long localOffset, int childOffset) {
 		// do math to get level
 		long levelIndexStartsAt = (long)Math.pow(HeapNavigator.MAX_CHILD_COUNT, levelToLoadFrom);
 		
@@ -125,10 +124,10 @@ public abstract class HeapNavigator<D> {
 		// get index of child
 		long childIndex = levelIndexStartsAt + childIndexStartsAt + childOffset;
 		
-		return this.configuration.nodeFactory().getMatcher(values.get((int)childIndex), this.configuration);
+		return values.get(childIndex);
 	}
 	
-	protected Matcher construct(Character local, Map<Integer,Character> values, long parentLevel, long parentOffset, Direction whichDirectionToLoad) {
+	protected Matcher construct(Character local, Map<Long,Matcher> values, long parentLevel, long parentOffset, Direction whichDirectionToLoad) {
 
 		// do math to get level
 		long levelIndexStartsAt = (long)Math.pow(HeapNavigator.MAX_CHILD_COUNT, parentLevel+1);
@@ -139,8 +138,7 @@ public abstract class HeapNavigator<D> {
 		// get index of child
 		long childIndex = levelIndexStartsAt + childIndexStartsAt + whichDirectionToLoad.offset();
 
-		if(values.containsKey(childIndex)) {
-			// return without insert
+		if(values.get(childIndex) != null) {
 			return null;
 		}
 				
@@ -148,17 +146,14 @@ public abstract class HeapNavigator<D> {
 		Matcher created = this.configuration.nodeFactory().getMatcher(local, this.configuration);
 		
 		// put matcher into list of values
-		values.put((int)childIndex, Character.valueOf(local));
+		values.put(childIndex, created);
 		
 		// return value
 		return created;
 	}
 	
-	protected boolean attracts(Map<Integer,Character> values, long levelToLoadFrom, long localOffset, boolean exact) {
+	protected boolean attracts(Matcher current, Map<Long,Matcher> values, long levelToLoadFrom, long localOffset, boolean exact) {
 		boolean attracts = false;
-		
-		// load the current
-		Matcher current = this.loadCurrent(values, levelToLoadFrom, localOffset);
 		
 		// if the item is missing bail (it obviously can't "attract")
 		if(current == null) {

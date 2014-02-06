@@ -16,7 +16,7 @@ public class DirectionalNavigator<D> extends HeapNavigator<D> {
 	}
 	
 	@Override
-	protected void navigate(HeapVisitor<D> visitor, Map<Integer,Character> values, long currentLevel, long indexInLevel, char[] key, int stringIndex, boolean exact) {		
+	protected void navigate(HeapVisitor<D> visitor, Map<Long,Matcher> values, long currentLevel, long indexInLevel, char[] key, int stringIndex, boolean exact) {		
 		// nothing to do here
 		if(stringIndex >= key.length) {
 			return;
@@ -78,10 +78,10 @@ public class DirectionalNavigator<D> extends HeapNavigator<D> {
 		
 		// load lower and higher points
 		Matcher higher = this.loadChild(values, currentLevel+1, indexInLevel, Direction.HIGHER);
-		final boolean higherAttract = this.attracts(values, currentLevel+1, indexInLevel*3+Direction.HIGHER.offset(), exact);
+		final boolean higherAttract = this.attracts(higher, values, currentLevel+1, indexInLevel*3+Direction.HIGHER.offset(), exact);
 		
 		Matcher lower = this.loadChild(values, currentLevel+1, indexInLevel, Direction.LOWER);
-		final boolean lowerAttract = this.attracts(values, currentLevel+1, indexInLevel*3+Direction.LOWER.offset(), exact);
+		final boolean lowerAttract = this.attracts(lower, values, currentLevel+1, indexInLevel*3+Direction.LOWER.offset(), exact);
 		
 		// check high
 		if(matcher.compare(local) < 0 || (higher != null && !exact && higherAttract)) {

@@ -39,6 +39,20 @@
 		    <scope>test</scope>
 		</dependency>
 		
+		<!-- bit collections and fast collections -->
+		<dependency>
+		    <groupId>it.unimi.dsi</groupId>
+		    <artifactId>fastutil</artifactId>
+		    <version>6.5.12</version>
+		</dependency>
+		
+		<!-- direct radix tree implementation -->
+		<dependency>
+		    <groupId>com.googlecode.concurrent-trees</groupId>
+		    <artifactId>concurrent-trees</artifactId>
+		    <version>2.4.0</version>
+		</dependency>
+		
 		<dependency>
 		    <groupId>net.sf.trove4j</groupId>
 		    <artifactId>trove4j</artifactId>

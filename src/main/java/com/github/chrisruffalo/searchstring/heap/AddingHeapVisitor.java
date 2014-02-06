@@ -3,6 +3,7 @@ package com.github.chrisruffalo.searchstring.heap;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -25,7 +26,7 @@ public class AddingHeapVisitor<D> implements HeapVisitor<D> {
 		// todo: throw exception if input is null or empty
 		
 		this.targetValues = targetValues;
-		this.input = new TreeSet<>();
+		this.input = new LinkedHashSet<>();
 		this.input.addAll(input);
 	}
 	

@@ -1,7 +1,8 @@
 package com.github.chrisruffalo.searchstring;
 
+import it.unimi.dsi.fastutil.chars.Char2ObjectLinkedOpenHashMap;
+
 import java.util.Map;
-import java.util.TreeMap;
 
 import com.github.chrisruffalo.searchstring.config.SearchConfiguration;
 import com.github.chrisruffalo.searchstring.matcher.AnyCharacterMatcher;
@@ -21,7 +22,7 @@ public class DefaultNodeFactoryImpl implements NodeFactory {
 	private Map<Character, Matcher> matcherCache;
 	
 	public DefaultNodeFactoryImpl() {
-		this.matcherCache = new TreeMap<Character, Matcher>();
+		this.matcherCache = new Char2ObjectLinkedOpenHashMap<Matcher>();
 	}
 
 	/**
