@@ -12,6 +12,9 @@
 		<!-- source output version -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		
+		<!-- target language version -->
+		<stringsearch.java.version>1.6</stringsearch.java.version>
+		
 		<!-- versions -->
 		<slf4j.version>1.7.5</slf4j.version>
 		<logback.version>1.0.13</logback.version>
@@ -30,6 +33,13 @@
 		    <artifactId>slf4j-api</artifactId>
 		    <version>${slf4j.version}</version>
 		</dependency>
+
+		<!-- fast (primitive) collections/maps -->
+		<dependency>
+		    <groupId>net.sf.trove4j</groupId>
+		    <artifactId>trove4j</artifactId>
+		    <version>3.0.3</version>
+		</dependency>
 	
 		<!-- logging impl during testing -->
 		<dependency>
@@ -38,35 +48,23 @@
 		    <version>${logback.version}</version>
 		    <scope>test</scope>
 		</dependency>
-		
-		<!-- bit collections and fast collections -->
-		<dependency>
-		    <groupId>it.unimi.dsi</groupId>
-		    <artifactId>fastutil</artifactId>
-		    <version>6.5.12</version>
-		</dependency>
-		
-		<!-- direct radix tree implementation -->
+				
+		<!-- direct radix tree implementation (to test against)-->
 		<dependency>
 		    <groupId>com.googlecode.concurrent-trees</groupId>
 		    <artifactId>concurrent-trees</artifactId>
 		    <version>2.4.0</version>
+		    <scope>test</scope>
 		</dependency>
 		
+		<!-- size measuring/speed benchmarks (micro benchmarks) -->
 		<dependency>
-		    <groupId>net.sf.trove4j</groupId>
-		    <artifactId>trove4j</artifactId>
-		    <version>3.0.3</version>
-		</dependency>
-
-		<!-- utilities and stuff -->
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<version>${guava.version}</version>
-			<scope>test</scope>
-		</dependency>
-	
+		  <groupId>com.google.caliper</groupId>
+		  <artifactId>caliper</artifactId>
+		  <version>1.0-beta-1</version>
+		  <scope>test</scope>
+		</dependency>		
+			
 		<!-- testing/junit -->
 		<dependency>
 			<groupId>junit</groupId>
@@ -105,8 +103,8 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
 					<configuration>
-						<source>1.7</source>
-						<target>1.7</target>
+						<source>${stringsearch.java.version}</source>
+						<target>${stringsearch.java.version}</target>
 						<fork>true</fork>
 					</configuration>
 				</plugin>
