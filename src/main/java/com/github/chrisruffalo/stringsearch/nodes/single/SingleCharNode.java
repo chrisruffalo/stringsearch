@@ -1,8 +1,8 @@
-package com.github.chrisruffalo.stringsearch.nodes.singlechar;
+package com.github.chrisruffalo.stringsearch.nodes.single;
 
-import com.github.chrisruffalo.stringsearch.nodes.NodeWithValues;
+import com.github.chrisruffalo.stringsearch.nodes.NodeWithChildren;
 
-public class SingleCharLeafWithValues<T> extends NodeWithValues<T> {
+public class SingleCharNode<T> extends NodeWithChildren<T> {
 
 	private Character content;
 	
@@ -39,5 +39,5 @@ public class SingleCharLeafWithValues<T> extends NodeWithValues<T> {
 	@Override
 	public Character key() {
 		return this.content;
-	}	
+	}
 }

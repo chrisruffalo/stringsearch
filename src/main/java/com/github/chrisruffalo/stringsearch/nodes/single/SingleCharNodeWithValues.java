@@ -1,4 +1,4 @@
-package com.github.chrisruffalo.stringsearch.nodes.singlechar;
+package com.github.chrisruffalo.stringsearch.nodes.single;
 
 import com.github.chrisruffalo.stringsearch.nodes.NodeWithValuesAndChildren;
 

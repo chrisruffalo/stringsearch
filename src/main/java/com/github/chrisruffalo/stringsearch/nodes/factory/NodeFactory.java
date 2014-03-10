@@ -6,10 +6,10 @@ import com.github.chrisruffalo.stringsearch.nodes.sequence.CharSequenceLeaf;
 import com.github.chrisruffalo.stringsearch.nodes.sequence.CharSequenceLeafWithValues;
 import com.github.chrisruffalo.stringsearch.nodes.sequence.CharSequenceNode;
 import com.github.chrisruffalo.stringsearch.nodes.sequence.CharSequenceNodeWithValues;
-import com.github.chrisruffalo.stringsearch.nodes.singlechar.SingleCharLeaf;
-import com.github.chrisruffalo.stringsearch.nodes.singlechar.SingleCharLeafWithValues;
-import com.github.chrisruffalo.stringsearch.nodes.singlechar.SingleCharNode;
-import com.github.chrisruffalo.stringsearch.nodes.singlechar.SingleCharNodeWithValues;
+import com.github.chrisruffalo.stringsearch.nodes.single.SingleCharLeaf;
+import com.github.chrisruffalo.stringsearch.nodes.single.SingleCharLeafWithValues;
+import com.github.chrisruffalo.stringsearch.nodes.single.SingleCharNode;
+import com.github.chrisruffalo.stringsearch.nodes.single.SingleCharNodeWithValues;
 
 public class NodeFactory {
 
