@@ -1,11 +1,10 @@
 package com.github.chrisruffalo.stringsearch.root;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
+import com.github.chrisruffalo.stringsearch.config.DefaultAtomicRadixConfiguration;
+import com.github.chrisruffalo.stringsearch.config.RadixConfigurationImpl;
 import com.github.chrisruffalo.stringsearch.nodes.Node;
 import com.github.chrisruffalo.stringsearch.nodes.factory.NodeFactory;
 
@@ -24,9 +23,15 @@ public class AtomicRadixImpl<T> extends AbstractRadix<T> {
 	private Map<Character, AtomicReference<Node<T>>> nodeMap;
 	
 	public AtomicRadixImpl() {
-		this.nodeMap = this.configuration().storageFactory().createMap();
+		this(new DefaultAtomicRadixConfiguration());
 	}
 	
+	public AtomicRadixImpl(RadixConfigurationImpl configuration) {
+		super(configuration);
+		
+		this.nodeMap = this.configuration().storageFactory().createMap();
+	}
+
 	@Override
 	protected Node<T> getNode(CharSequence key, boolean create) {
 		Character first = key.charAt(0);
@@ -45,24 +50,6 @@ public class AtomicRadixImpl<T> extends AbstractRadix<T> {
 		if(reference != null) {
 			reference.set(incoming);
 		}
-	}
-
-	@Override
-	protected List<Node<T>> children() {
-		if(this.nodeMap.isEmpty()) {
-			return Collections.emptyList();
-		}
-		List<Node<T>> children = new LinkedList<Node<T>>();
-		for(AtomicReference<Node<T>> reference : this.nodeMap.values()) {
-			if(reference == null) {
-				continue;
-			}			
-			Node<T> node = reference.get();
-			if(node != null) {
-				children.add(node);
-			}
-		}
-		return Collections.unmodifiableList(children);
 	}
 	
 }

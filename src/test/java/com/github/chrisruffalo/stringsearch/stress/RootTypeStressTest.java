@@ -1,4 +1,4 @@
-package com.github.chrisruffalo.stringsearch;
+package com.github.chrisruffalo.stringsearch.stress;
 
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -8,33 +8,32 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.github.chrisruffalo.stringsearch.Radix;
-import com.github.chrisruffalo.stringsearch.root.RadixImpl;
 import com.github.chrisruffalo.stringsearch.util.Dictionary;
 import com.github.chrisruffalo.stringsearch.util.Generator;
 import com.googlecode.concurrenttrees.radix.ConcurrentRadixTree;
 import com.googlecode.concurrenttrees.radix.RadixTree;
 import com.googlecode.concurrenttrees.radix.node.concrete.DefaultByteArrayNodeFactory;
 
-public class StressTest {
+public abstract class RootTypeStressTest {
 
+	public abstract <T> Radix<T> create();
+	
+	public abstract int keyLength();
+	
+	public abstract int largeSet();
+	
+	public abstract int smallSet();
+	
 	@Test
 	public void testLoadDictionary() {
 		//System.out.println("Loading to list... ");
-		List<String> dictionary = Dictionary.load();
-		
+		List<String> dictionary = Dictionary.load();		
 		
 		//System.out.println("Loading to radix... ");
-		Radix<String> radix = new RadixImpl<String>();
+		Radix<String> radix = this.create();
 		Dictionary.load(radix, true);
 		
-		//System.out.println(radix.print());
-		//System.out.println("========================================");
-		//System.out.println("");
-		//Measure.size(radix);
-		
-		// loaded dictionary size
-		//Measure.size(dictionary);
-		
+		// check
 		for(String item : dictionary) {
 			Set<String> result = radix.get(item);
 			Assert.assertEquals(1, result.size());
@@ -45,18 +44,10 @@ public class StressTest {
 	
 	@Test
 	public void testLargeLoad() {
-		// just fast enough to not have to wait all day
-		// but still a lot of entries
-		final int ENTRIES = 1500000;
-
-		// 52 characters is based on a long first name, last name, and middle initial plus breaking spaces
-		// along with a 10 digit suffix. so the first name would be 13 characters, the middle name would be 
-		// 13 characters, and the last name would be 13 characters.  There would be three spaces and a 10
-		// digit code at the end.
-		// like: "Christopher Marcellus Hamptovich 9192842123" (which is 43)
-		final int LENGTH = 52;
+		final int ENTRIES = this.largeSet();
+		final int LENGTH = this.keyLength();
 		
-		Radix<Integer> radix = new RadixImpl<Integer>();
+		Radix<Integer> radix = this.create();
 		
 		Set<String> values = new LinkedHashSet<String>();
 		
@@ -90,18 +81,10 @@ public class StressTest {
 	
 	@Test
 	public void testLoadAgainstExternalImplementation() {
-		// just fast enough to not have to wait all day
-		// but still a lot of entries
-		final int ENTRIES = 500000;
-
-		// 52 characters is based on a long first name, last name, and middle initial plus breaking spaces
-		// along with a 10 digit suffix. so the first name would be 13 characters, the middle name would be 
-		// 13 characters, and the last name would be 13 characters.  There would be three spaces and a 10
-		// digit code at the end.
-		// like: "Christopher Marcellus Hamptovich 9192842123" (which is 43)
-		final int LENGTH = 52;
+		final int ENTRIES = this.smallSet();
+		final int LENGTH = this.keyLength();
 		
-		Radix<Integer> radix = new RadixImpl<Integer>();
+		Radix<Integer> radix = this.create();
 		RadixTree<Integer> radixTree = new ConcurrentRadixTree<Integer>(new DefaultByteArrayNodeFactory());
 		
 		Set<String> values = new LinkedHashSet<String>();

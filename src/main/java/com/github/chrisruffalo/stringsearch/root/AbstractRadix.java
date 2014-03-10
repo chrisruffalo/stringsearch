@@ -3,11 +3,10 @@ package com.github.chrisruffalo.stringsearch.root;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 
 import com.github.chrisruffalo.stringsearch.Radix;
-import com.github.chrisruffalo.stringsearch.config.DefaultRadixConfiguration;
+import com.github.chrisruffalo.stringsearch.config.DefaultRadixConfigurationImpl;
 import com.github.chrisruffalo.stringsearch.config.RadixConfiguration;
 import com.github.chrisruffalo.stringsearch.nodes.Node;
 import com.github.chrisruffalo.stringsearch.shared.ISwap;
@@ -24,7 +23,7 @@ public abstract class AbstractRadix<T> implements Radix<T>, ISwap<Node<T>> {
 	private RadixConfiguration configuration;
 	
 	public AbstractRadix() {
-		this(new DefaultRadixConfiguration());
+		this(new DefaultRadixConfigurationImpl());
 	}
 	
 	public AbstractRadix(RadixConfiguration configuration) {
@@ -32,9 +31,7 @@ public abstract class AbstractRadix<T> implements Radix<T>, ISwap<Node<T>> {
 	}
 	
 	protected abstract Node<T> getNode(CharSequence key, boolean create);
-	
-	protected abstract List<Node<T>> children();
-	
+
 	protected RadixConfiguration configuration() {
 		return this.configuration;
 	}
@@ -59,18 +56,4 @@ public abstract class AbstractRadix<T> implements Radix<T>, ISwap<Node<T>> {
 		} 
 		return Collections.emptySet();
 	}
-	
-	public String print() {
-		StringBuilder builder = new StringBuilder();
-		boolean first = true;
-		for(Node<T> node : this.children()) {
-			if(!first) {
-				builder.append("\n");
-			}
-			builder.append(node.print());
-			first = false;
-		}
-		return builder.toString();		
-	}
-	
 }

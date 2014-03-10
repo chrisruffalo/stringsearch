@@ -1,10 +1,9 @@
 package com.github.chrisruffalo.stringsearch.root;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
+import com.github.chrisruffalo.stringsearch.config.DefaultAtomicRadixConfiguration;
+import com.github.chrisruffalo.stringsearch.config.RadixConfigurationImpl;
 import com.github.chrisruffalo.stringsearch.nodes.Node;
 import com.github.chrisruffalo.stringsearch.nodes.factory.NodeFactory;
 
@@ -21,6 +20,12 @@ public class RadixImpl<T> extends AbstractRadix<T> {
 	private Map<Character, Node<T>> nodeMap;
 	
 	public RadixImpl() {
+		this(new DefaultAtomicRadixConfiguration());
+	}
+	
+	public RadixImpl(RadixConfigurationImpl configuration) {
+		super(configuration);
+		
 		this.nodeMap = this.configuration().storageFactory().createMap();
 	}
 	
@@ -38,14 +43,6 @@ public class RadixImpl<T> extends AbstractRadix<T> {
 	public void swap(Node<T> outgoing, Node<T> incoming) {
 		Character first = outgoing.content().charAt(0);
 		this.nodeMap.put(first, incoming);
-	}
-
-	@Override
-	protected List<Node<T>> children() {
-		if(this.nodeMap.isEmpty()) {
-			return Collections.emptyList();
-		}
-		return Collections.unmodifiableList(new LinkedList<Node<T>>(this.nodeMap.values()));
 	}
 	
 }

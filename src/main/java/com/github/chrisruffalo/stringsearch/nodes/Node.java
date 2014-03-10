@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import com.github.chrisruffalo.stringsearch.config.RadixConfiguration;
@@ -25,22 +24,7 @@ public abstract class Node<T>  implements ISwap<Node<T>>, Comparable<Node<T>> {
 	public void init(RadixConfiguration configuration) {
 		// initialize node
 	}
-	
-	/**
-	 * Swap a new node in for and old node (that is basically
-	 * the same as saying that we need to update the tree
-	 * to have a new view from this node forward)
-	 * 
-	 */
-	public void swap(Node<T> outgoing, Node<T> incoming) {
-		Map<Character, Node<T>> refs = this.children();
-
-		// swap by removing old and adding incoming
-		// probably should wrap this in some sort of lock
-		refs.remove(outgoing.key());
-		refs.put(incoming.key(), incoming);		
-	}
-	
+		
 	/**
 	 * Item can have children
 	 * 
@@ -76,12 +60,12 @@ public abstract class Node<T>  implements ISwap<Node<T>>, Comparable<Node<T>> {
 	public abstract Character key();
 
 	
-	protected void children(Map<Character, Node<T>> children) {
+	protected void children(Collection<Node<T>> children) {
 		// no-op
 	}
 	
-	public Map<Character, Node<T>> children() {
-		return null;
+	protected Collection<Node<T>> children() {
+		return Collections.emptySet();
 	}
 	
 	protected void values(Set<T> values) {
@@ -92,6 +76,14 @@ public abstract class Node<T>  implements ISwap<Node<T>>, Comparable<Node<T>> {
 		return null;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void swap(Node<T> outgoing, Node<T> incoming) {
+		// no-op
+	}
+	
 	/**
 	 * Add a single item to storage.  Null items
 	 * are not accepted.
@@ -126,44 +118,38 @@ public abstract class Node<T>  implements ISwap<Node<T>>, Comparable<Node<T>> {
 	}
 	
 	/**
-	 * FIX ME.  I AM REALLY SLOW.
+	 * Lookup child to extend find
 	 * 
 	 * @param forKey
 	 * @return
 	 */
 	protected Node<T> findChild(CharSequence forKey) {
-		// get a reference to reduce method calls
-		Map<Character, Node<T>> reference = this.children();
-		
 		// return answer
-		if(reference == null || reference.isEmpty() || forKey == null || forKey.length() < 1) {
+		if(forKey == null || forKey.length() < 1) {
 			return null;
 		}
 		
 		// if found, return
-		return reference.get(forKey.charAt(0));
+		return this.getChild(forKey.charAt(0));
 	}
 	
 	/**
-	 * FIX ME, I AM SUPER SLOW
+	 * Finds the literal character and then does special
+	 * logic to find/match against possible wildcards
 	 * 
 	 * @param forKey
 	 * @return
 	 */
 	private List<Node<T>> findChildren(CharSequence forKey) {
-		Map<Character, Node<T>> reference = this.children();
-		
-		if(reference == null || !this.supportsChildren()) {
+		if(!this.supportsChildren()) {
 			return Collections.emptyList();
 		}
 		
 		List<Node<T>> found = new LinkedList<Node<T>>();
 		
-		for(Node<T> radix : reference.values()) {
-			if(radix.matches(forKey)) {
-				found.add(radix);
-			}
-		}
+		found.add(this.findChild(forKey));
+		
+		// add bit to look up wildcard/special characters
 		
 		return found;	
 	}
@@ -321,7 +307,7 @@ public abstract class Node<T>  implements ISwap<Node<T>>, Comparable<Node<T>> {
 				
 				// add newly created child to the list of children
 				// for this node
-				reference.children().put(child.key(), child);	
+				reference.putChild(child.key(), child);	
 			}
 			
 		} 
@@ -353,7 +339,7 @@ public abstract class Node<T>  implements ISwap<Node<T>>, Comparable<Node<T>> {
 			}
 			
 			// add this child
-			newParent.children().put(continuingNode.key(), continuingNode);
+			newParent.putChild(continuingNode.key(), continuingNode);
 			
 			// swap
 			if(parent != null) {
@@ -393,8 +379,8 @@ public abstract class Node<T>  implements ISwap<Node<T>>, Comparable<Node<T>> {
 			Node<T> replacement = NodeFactory.create(common, configuration, true, false);
 			
 			// add children
-			replacement.children().put(continuingNode.key(), continuingNode);
-			replacement.children().put(suffixNode.key(), suffixNode);
+			replacement.putChild(continuingNode.key(), continuingNode);
+			replacement.putChild(suffixNode.key(), suffixNode);
 			
 			// swap
 			if(parent != null) {
@@ -456,6 +442,19 @@ public abstract class Node<T>  implements ISwap<Node<T>>, Comparable<Node<T>> {
 			}
 		}
 	}
+	
+	// ========================================================================================================
+	// ========================================== CHILD MANAGEMENT ============================================
+	// ========================================================================================================
+	
+	protected void putChild(Character key, Node<T> child) {
+		// no-op
+	}
+	
+	protected Node<T> getChild(Character key) {
+		// does nothing here
+		return null;
+	}
 		
 	// ========================================================================================================
 	// =========================================== UTILITY METHODS ============================================
@@ -471,32 +470,4 @@ public abstract class Node<T>  implements ISwap<Node<T>>, Comparable<Node<T>> {
 		return this.getClass().getSimpleName() + " [content()=" + this.content() + "]";
 	}
 
-	public String print() {
-		return this.print("");
-	}
-	
-	protected String print(String prefix) {
-		StringBuilder builder = new StringBuilder();
-		builder.append(prefix);
-		builder.append(this.content());
-		builder.append(" : ");
-		builder.append(this.getClass().getSimpleName());
-		if(this.supportsValues() && this.values() != null) {
-			builder.append( " => ");
-			builder.append(this.values().toString());
-		}
-		
-		StringBuilder buffer = new StringBuilder();
-		for(int i = 0; i < this.content().length(); i++) {
-			buffer.append(" ");
-		}
-		
-		if(this.children() != null) {
-			for(Node<T> child : this.children().values()) {
-				builder.append("\n");
-				builder.append(child.print(prefix + buffer.toString()));
-			}
-		}
-		return builder.toString();
-	}
 }
