@@ -16,4 +16,15 @@ public class CharSequenceLeaf<T> extends Node<T> {
 		return this.content;
 	}
 	
+	@Override
+	protected boolean matches(CharSequence key) {
+		return this.content().charAt(0) == key.charAt(0);
+	}
+	
+	@Override
+	public Character key() {
+		return this.content.charAt(0);
+	}
+
+
 }

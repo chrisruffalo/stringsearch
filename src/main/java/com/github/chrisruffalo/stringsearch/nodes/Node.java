@@ -27,18 +27,6 @@ public abstract class Node<T>  implements ISwap<Node<T>>, Comparable<Node<T>> {
 	}
 	
 	/**
-	 * Use to copy this node from another node in preparation to 
-	 * swap the 'other' node out and bring this one in.
-	 * 
-	 * @param other
-	 */
-//	public void from(Node<T> other) {
-//		this.children(other.children());
-//		this.values(other.values());
-//		this.content(other.content());
-//	}
-	
-	/**
 	 * Swap a new node in for and old node (that is basically
 	 * the same as saying that we need to update the tree
 	 * to have a new view from this node forward)
@@ -80,10 +68,13 @@ public abstract class Node<T>  implements ISwap<Node<T>>, Comparable<Node<T>> {
 	}
 	
 	public abstract CharSequence content();
+
+
+	protected abstract boolean matches(CharSequence key);
+
 	
-	public Character key() {
-		return this.content().charAt(0);
-	}
+	public abstract Character key();
+
 	
 	protected void children(Map<Character, Node<T>> children) {
 		// no-op
@@ -176,10 +167,6 @@ public abstract class Node<T>  implements ISwap<Node<T>>, Comparable<Node<T>> {
 		
 		return found;	
 	}
-
-	protected boolean matches(CharSequence key) {
-		return this.content().charAt(0) == key.charAt(0);
-	}
 	
 	/**
 	 * {@inheritDoc}
@@ -193,19 +180,22 @@ public abstract class Node<T>  implements ISwap<Node<T>>, Comparable<Node<T>> {
 			return 1;
 		}
 		
-		if(this.content() == null && o.content() == null) {
+		CharSequence localContent = this.content();
+		CharSequence remoteContent = o.content();
+		
+		if(localContent == null && remoteContent == null) {
 			return 0;
 		}
 		
-		if(o.content() == null) {
+		if(remoteContent == null) {
 			return 1;
 		}
 		
-		if(this.content() == null) {
+		if(localContent == null) {
 			return -1;
 		}
 		
-		return Character.compare(this.content().charAt(0), o.content().charAt(0));
+		return Character.compare(localContent.charAt(0), remoteContent.charAt(0));
 	}
 	
 	
@@ -218,7 +208,8 @@ public abstract class Node<T>  implements ISwap<Node<T>>, Comparable<Node<T>> {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((this.content() == null) ? 0 : this.content().hashCode());
+		CharSequence content = this.content();
+		result = prime * result + ((content == null) ? 0 : content.hashCode());
 		return result;
 	}
 
@@ -232,7 +223,7 @@ public abstract class Node<T>  implements ISwap<Node<T>>, Comparable<Node<T>> {
 		}
 		if (obj instanceof Node) {
 			Node<?> other = (Node<?>) obj;
-			
+
 			if (this.content() == null) {
 				if (other.content() != null) {
 					return false;
@@ -243,7 +234,7 @@ public abstract class Node<T>  implements ISwap<Node<T>>, Comparable<Node<T>> {
 		} else if(obj instanceof Character) {
 			Character c = (Character)obj;
 			
-			return c.equals(this.content().charAt(0));
+			return c.equals(this.key());
 		}
 		
 		
@@ -254,12 +245,15 @@ public abstract class Node<T>  implements ISwap<Node<T>>, Comparable<Node<T>> {
 	 * {@inheritDoc}
 	 */
 	public void put(ISwap<Node<T>> parent, CharSequence key, Collection<T> items, RadixConfiguration configuration) {
+		// just get this ONCE
+		CharSequence localContent = this.content();
+		
 		// no need to build more tree, 
 		// we have arrived
-		if(this.content().equals(key)) {
+		if(localContent.equals(key)) {
 			Node<T> reference = this;
 			
-			reference = NodeFactory.create(this.content(), configuration, this.supportsChildren(), true);
+			reference = NodeFactory.create(localContent, configuration, this.supportsChildren(), true);
 			if(this.supportsChildren()) {
 				reference.children(this.children());
 			}
@@ -274,7 +268,7 @@ public abstract class Node<T>  implements ISwap<Node<T>>, Comparable<Node<T>> {
 		}
 		
 		// get prefix
-		CharSequence common = CharSequenceUtils.commonPrefix(this.content(), key);
+		CharSequence common = CharSequenceUtils.commonPrefix(localContent, key);
 	
 		// how did we even get here?
 		if(common == null || common.length() < 1) {
@@ -292,14 +286,14 @@ public abstract class Node<T>  implements ISwap<Node<T>>, Comparable<Node<T>> {
 		// (it could be optimized so that crackle becomes the only
 		//  content but that only works if there are no other children
 		//  and no other values)
-		if(common.equals(this.content())) {
+		if(common.equals(localContent)) {
 			CharSequence chomped = CharSequenceUtils.chomp(common, key);
 			
 			// need to make an item that can support children
 			Node<T> reference = this;			
 			if(!this.supportsChildren()) {
 				boolean needsValueRef = this.needsValueReferenceForItems(this.values());
-				reference = NodeFactory.create(this.content(), configuration, true, needsValueRef);
+				reference = NodeFactory.create(localContent, configuration, true, needsValueRef);
 				// update values
 				if(needsValueRef) {
 					reference.add(this.values());
@@ -349,7 +343,7 @@ public abstract class Node<T>  implements ISwap<Node<T>>, Comparable<Node<T>> {
 			
 			// local content becoming new child that will get swapped in
 			boolean continuationNeedsValueRef = this.needsValueReferenceForItems(this.values());
-			CharSequence continuation = CharSequenceUtils.chomp(common, this.content());
+			CharSequence continuation = CharSequenceUtils.chomp(common, localContent);
 			Node<T> continuingNode = NodeFactory.create(continuation, configuration, this.supportsChildren(), continuationNeedsValueRef);
 			if(this.supportsChildren()) {
 				continuingNode.children(this.children());
@@ -378,7 +372,7 @@ public abstract class Node<T>  implements ISwap<Node<T>>, Comparable<Node<T>> {
 		else {
 			// old content becoming child
 			boolean continuationNeedsValueRef = this.needsValueReferenceForItems(this.values());
-			CharSequence continuation = CharSequenceUtils.chomp(common, this.content());
+			CharSequence continuation = CharSequenceUtils.chomp(common, localContent);
 			Node<T> continuingNode = NodeFactory.create(continuation, configuration, this.supportsChildren(), continuationNeedsValueRef);
 			if(this.supportsChildren()) {
 				continuingNode.children(this.children());
@@ -474,7 +468,7 @@ public abstract class Node<T>  implements ISwap<Node<T>>, Comparable<Node<T>> {
 		
 	@Override
 	public String toString() {
-		return this.getClass().getSimpleName() + " [content()=" + content() + "]";
+		return this.getClass().getSimpleName() + " [content()=" + this.content() + "]";
 	}
 
 	public String print() {
